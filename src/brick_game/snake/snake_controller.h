@@ -2,20 +2,20 @@
 #define SNAKE_CONTROLLER_H
 
 #include "snake_game.h"
-#include "snake_view.h"
+#include "../../gui/cli/cli_view.h"
 
 namespace s21 {
 
 class SnakeController {
    public:
-    SnakeController(SnakeGame& game, SnakeView& view);
+    SnakeController(SnakeGame& game, CLIView& view);
     ~SnakeController();
 
     void run();
 
    private:
     SnakeGame& game_;
-    SnakeView& view_;
+    CLIView& view_;
 };
 
 }  // namespace s21

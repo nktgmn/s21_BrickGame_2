@@ -1,30 +1,30 @@
 #include "snake_controller.h"
 
-#include <unistd.h>
-
-#include <iostream>
-
 namespace s21 {
 
-SnakeController::SnakeController(SnakeGame& game, SnakeView& view)
+SnakeController::SnakeController(SnakeGame& game, CLIView& view)
     : game_(game), view_(view) {}
 
-SnakeController::~SnakeController() { exit(0); }
+SnakeController::~SnakeController() {
+    game_.~SnakeGame();
+    view_.~CLIView();
+    exit(0);
+}
 
 void SnakeController::run() {
-    unsigned long long time_left = GAME_SPEED;
-
     while (true) {
-        GameInfo game_info = game_.get_game_info();
+        GameInfo& game_info = game_.get_game_info();
         view_.render(game_info);
-        std::pair<UserAction, unsigned long long> input_result =
-            view_.get_input(time_left);
-        if (input_result.second == 0) {
-            game_.move();
-            time_left = GAME_SPEED;
+        delete &game_info;
+
+        CLIView::Input input_result = view_.get_input(game_.get_time_left());
+
+        if (input_result.action_ == UserAction::Terminate) {
+            this->~SnakeController();
+        } else if (input_result.has_action_ == true) {
+            game_.user_input(input_result.action_, input_result.hold_);
         } else {
-            game_.user_input(input_result.first);
-            time_left = input_result.second;
+            game_.move();
         }
     }
 }
