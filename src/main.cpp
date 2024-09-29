@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
-#include "brick_game/snake/snake_controller.h"
+
 #include "brick_game/snake/snake_game.h"
+#include "brick_game/tetris/tetris_game.h"
+#include "game_controller.h"
 #include "gui/cli/cli_view.h"
 
 int main(int argc, char* argv[]) {
@@ -19,13 +21,25 @@ int main(int argc, char* argv[]) {
         if (interface == "cli") {
             s21::SnakeGame model;
             s21::CLIView view;
-            s21::SnakeController controller(model, view);
+            s21::GameController controller(model, view);
             controller.run();
         } else {
             std::cerr << "Invalid interface: " << interface << "\n";
             return 1;
         }
-    } else {
+    } else if (game == "tetris") {
+        if (interface == "cli") {
+            s21::TetrisGame model;
+            s21::CLIView view;
+            s21::GameController controller(model, view);
+            controller.run();
+        } else {
+            std::cerr << "Invalid interface: " << interface << "\n";
+            return 1;
+        }
+    }
+
+    else {
         std::cerr << "Invalid game: " << game << "\n";
         return 1;
     }

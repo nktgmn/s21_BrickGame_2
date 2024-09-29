@@ -51,29 +51,29 @@ void CLIView::render(GameInfo &game_info) {
     delwin(params_window);
 }
 
-CLIView::Input CLIView::get_input(double time_left) {
+Input CLIView::get_input(double time_left) {
     timeout(time_left);
 
     int c = getch();
 
     if (c == START_BUTTON) {
-        return Input(UserAction::Start, check_for_hold(c), true);
+        return Input(UserAction_t::Start, check_for_hold(c), true);
     } else if (c == KEY_LEFT) {
-        return Input(UserAction::Left, check_for_hold(c), true);
+        return Input(UserAction_t::Left, check_for_hold(c), true);
     } else if (c == KEY_RIGHT) {
-        return Input(UserAction::Right, check_for_hold(c), true);
+        return Input(UserAction_t::Right, check_for_hold(c), true);
     } else if (c == KEY_UP) {
-        return Input(UserAction::Up, check_for_hold(c), true);
+        return Input(UserAction_t::Up, check_for_hold(c), true);
     } else if (c == KEY_DOWN) {
-        return Input(UserAction::Down, check_for_hold(c), true);
+        return Input(UserAction_t::Down, check_for_hold(c), true);
     } else if (c == TERMINATE_BUTTON) {
-        return Input(UserAction::Terminate, check_for_hold(c), true);
+        return Input(UserAction_t::Terminate, check_for_hold(c), true);
     } else if (c == PAUSE_BUTTON) {
-        return Input(UserAction::Pause, check_for_hold(c), true);
+        return Input(UserAction_t::Pause, check_for_hold(c), true);
     } else if (c == ACTION_BUTTON) {
-        return Input(UserAction::Action, check_for_hold(c), true);
+        return Input(UserAction_t::Action, check_for_hold(c), true);
     } else {
-        return Input(UserAction::Up, false, false);
+        return Input(UserAction_t::Up, false, false);
     }
 }
 

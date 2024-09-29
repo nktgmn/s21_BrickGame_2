@@ -7,15 +7,9 @@
 
 #include "../../game_params.h"
 
-#define NEW_LEVEL_TRESHOLD 5
-#define MAX_LEVEL 10
-#define SPEED 500
-#define MIN_SPEED 100
-#define SPEED_STEP 100
-
 namespace s21 {
 
-enum class State { Start, Move, Pause, GameLost, GameWon };
+enum class State_snake { Start, Move, Pause, GameLost, GameWon };
 
 enum class Direction {
     Up,
@@ -28,13 +22,19 @@ class SnakeGame {
    public:
     SnakeGame();
 
-    GameInfo& get_game_info();
-    void user_input(UserAction action, bool hold);
+    GameInfo& updateCurrentState() const;
+    void userInput(UserAction_t action, bool hold);
     void move();
     double get_time_left() const;
+    void update_level_and_max_score();
 
-    class Point {
-       public:
+    int get_max_score() const;
+    bool game_won() const;
+    bool game_lost() const;
+    void initialize_game();
+
+   private:
+    struct Point {
         Point(int x, int y);
         Point(const Point& other);
 
@@ -43,17 +43,15 @@ class SnakeGame {
         bool operator==(const Point& other) const;
         bool operator!=(const Point& other) const;
 
-       private:
         int x_;
         int y_;
         friend class SnakeGame;
     };
 
-    private:
     std::list<Point> snake_body;
     Direction snake_direction;
     Point apple;
-    State state;
+    State_snake state;
     int score;
     int level;
     int speed;
@@ -62,14 +60,9 @@ class SnakeGame {
     std::chrono::time_point<std::chrono::steady_clock> timestamp;
     double time_left;
 
-    bool game_won();
-    bool game_lost();
-    Point get_new_head(Direction direction);
+    Point get_new_head(Direction direction) const;
     void turn(Direction direction);
-    Point spawn_apple();
-    void reinitialize_game();
-    void update_level_and_max_score();
-    int get_max_score();
+    Point spawn_apple() const;
     void refresh_timer();
 };
 

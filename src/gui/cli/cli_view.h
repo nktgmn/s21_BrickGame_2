@@ -1,7 +1,8 @@
-#ifndef SNAKE_VIEW_H
-#define SNAKE_VIEW_H
+#ifndef CLI_VIEW_H
+#define CLI_VIEW_H
 
 #include <ncurses.h>
+
 #include <string>
 
 #include "../../game_params.h"
@@ -25,15 +26,6 @@ class CLIView {
     }
 
     ~CLIView() { endwin(); }
-
-    struct Input {
-        UserAction action_;
-        bool hold_;
-        bool has_action_;
-
-        Input(UserAction action, bool hold, bool has_action = true)
-            : action_(action), hold_(hold), has_action_(has_action) {}
-    };
 
     void render(GameInfo& game_info);
     Input get_input(double time_left);
