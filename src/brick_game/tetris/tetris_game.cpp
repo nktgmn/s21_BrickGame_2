@@ -71,6 +71,7 @@ TetrisGame::Block::Block() {
     std::uniform_int_distribution<> distrib_gen(0, 6);
 
     int type = distrib_gen(gen);
+    type = Block_type::ALPHA;
 
     if (type == Block_type::ALPHA) {
         size_ = 4;
@@ -130,7 +131,7 @@ void TetrisGame::Block::shift(int shift_x, int shift_y) {
     coordinates_.y_ += shift_y;
 }
 
-bool TetrisGame::block_is_attached(const Block &block) {
+bool TetrisGame::block_is_attached() {
     for (auto block_it = block.points_.begin(); block_it != block.points_.end();
          ++block_it) {
         for (auto field_it = field_points_.begin();
@@ -141,12 +142,15 @@ bool TetrisGame::block_is_attached(const Block &block) {
                 return true;
             }
         }
+        if ((*block_it).y_ + block.coordinates_.y_ == 0) {
+            return true;
+        }
     }
 
     return false;
 }
 
-bool TetrisGame::can_move_block(const Block &block) {
+bool TetrisGame::can_move_block() {
     for (auto block_it = block.points_.begin(); block_it != block.points_.end();
          ++block_it) {
         if ((((*block_it).x_ + block.coordinates_.x_) < 0) ||
@@ -167,10 +171,22 @@ bool TetrisGame::can_move_block(const Block &block) {
     return true;
 }
 
-void TetrisGame::attach_block() {
-    for (auto it = block.points_.begin(); it != block.points_.end(); ++it) {
-        field_points_.push_back(*it);
+bool TetrisGame::attach_block() {
+    if (block_is_attached() == true) {
+        for (auto it = block.points_.begin(); it != block.points_.end(); ++it) {
+            field_points_.push_back({(*it).x_ + block.coordinates_.x_,
+                                     (*it).y_ + block.coordinates_.y_});
+        }
+
+        block = next_block;
+        next_block = Block();
+
+        consume_rows();
+
+        return true;
     }
+
+    return false;
 }
 
 void TetrisGame::consume_rows() {
@@ -179,21 +195,30 @@ void TetrisGame::consume_rows() {
     int consumed_rows = 0;
 
     for (auto it = field_points_.begin(); it != field_points_.end(); ++it) {
-        ++rows[FIELD_H - (*it).y_ - 1];
+        ++(rows[FIELD_H - (*it).y_ - 1]);
     }
 
     for (auto rows_it = rows.begin(); rows_it != rows.end(); ++rows_it) {
-        if ((*rows_it).second == FIELD_H) {
+        if ((*rows_it).second == FIELD_W) {
             ++consumed_rows;
 
-            for (auto field_it = field_points_.begin();
-                 field_it != field_points_.end(); ++field_it) {
-                if ((*field_it).y_ > (FIELD_H - 1 - (*rows_it).first)) {
-                    --(*field_it).y_;
+            auto field_it = field_points_.begin();
+            while (field_it != field_points_.end()) {
+                if ((*rows_it).first == FIELD_H - (*field_it).y_ - 1) {
+                    field_it = field_points_.erase(field_it);
+                } else if ((*rows_it).first >= FIELD_H - (*field_it).y_ &&
+                           (*field_it).y_ > 0) {
+                    --((*field_it).y_);
+                    ++field_it;
+                }
+                else {
+                    ++field_it;
                 }
             }
         }
     }
+
+    std::cout << consumed_rows;
 
     if (consumed_rows == 1) {
         score += 100;
@@ -229,21 +254,25 @@ void TetrisGame::userInput(UserAction_t action, bool hold) {
             time_left = speed;
         }
     }
-
+    bool attached = false;
     if (action == UserAction_t::Left && state == State::Move) {
         Block old_block = block;
         block.shift(-1, 0);
 
-        if (can_move_block(block) == false) {
+        if (can_move_block() == false) {
             block = old_block;
+        } else {
+            attached = attach_block();
         }
 
     } else if (action == UserAction_t::Right && state == State::Move) {
         Block old_block = block;
         block.shift(1, 0);
 
-        if (can_move_block(block) == false) {
+        if (can_move_block() == false) {
             block = old_block;
+        } else {
+            attached = attach_block();
         }
     } else if ((action == UserAction_t::Start) &&
                (state == State::Start || state == State::GameWon)) {
@@ -252,11 +281,26 @@ void TetrisGame::userInput(UserAction_t action, bool hold) {
         timestamp = std::chrono::steady_clock::now();
     }
 
-    if (state != State::Pause) {
-        if (hold == false) {
-            refresh_timer();
+    if (action == UserAction_t::Action && state == State::Move) {
+        Block old_block = block;
+        block.rotate();
+
+        if (can_move_block() == false) {
+            block = old_block;
+        } else {
+            attached = attach_block();
         }
+    }
+
+    if (hold == true) {  // убрать это гавно
+        std::cout << "!!!!";
+    }
+
+    if (attached == false) {
         refresh_timer();
+    } else {
+        timestamp = std::chrono::steady_clock::now();
+        time_left = speed;
     }
 }
 
@@ -307,13 +351,19 @@ void TetrisGame::initialize_game() {
     block = Block();
     next_block = Block();
     state = State::Start;
+    score = 0;
     level = 1;
     speed = SPEED;
     normal_speed = SPEED;
     max_score = get_max_score(), time_left = SPEED;
 }
 
-void TetrisGame::move() { block.shift(0, -1); }
+void TetrisGame::move() {
+    block.shift(0, -1);
+    attach_block();
+    timestamp = std::chrono::steady_clock::now();
+    time_left = speed;
+}
 
 bool TetrisGame::valid_coordinate(int x, int y) const {
     if (x < 0 || y < 0 || x >= FIELD_W || y >= FIELD_H) {

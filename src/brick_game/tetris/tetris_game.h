@@ -5,6 +5,8 @@
 #include <sys/time.h>
 
 #include <fstream>
+#include <iostream>
+#include <list>
 #include <map>
 #include <random>
 #include <vector>
@@ -74,7 +76,7 @@ class TetrisGame {
         void shift(int shift_x, int shift_y);
     };
 
-    std::vector<Point> field_points_;
+    std::list<Point> field_points_;
     Block block;
     Block next_block;
     State state;
@@ -88,10 +90,10 @@ class TetrisGame {
 
     void update_level_and_max_score();
     void refresh_timer();
-    bool block_is_attached(const Block& block);
-    bool can_move_block(const Block& block);
+    bool block_is_attached();
+    bool can_move_block();
 
-    void attach_block();
+    bool attach_block();
     void consume_rows();
     bool game_lost();
 
