@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 
+#include <cstdio>
 #include <string>
 
 #include "../../game_params.h"

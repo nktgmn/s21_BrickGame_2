@@ -49,8 +49,11 @@ endif
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/coverage.info $(LCOV_FLAG)
 	$(OPEN_CMD) $(GCOV_DIR)/report/index.html
 
-leaks_play: install
+leaks_play_snake: install
 	leaks -atExit -- ./BrickGame snake cli
+
+leaks_play_tetris: install
+	leaks -atExit -- ./BrickGame tetris cli
 
 leaks_test: test
 	leaks -atExit -- $(EXECUTABLE_TEST)
@@ -66,5 +69,11 @@ clean:
 
 tetris: clean install
 	./BrickGame tetris cli
+
+snake: clean install
+	./BrickGame snake cli
+
+valgrind:
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./BrickGame tetris cli
 
 .PHONY: all clean test

@@ -5,7 +5,7 @@
 #define FIELD_W 10
 #define MAX_LEVEL 10
 #define SPEED 500
-#define MIN_SPEED 100
+#define MIN_SPEED 50
 #define SPEED_STEP 30
 #define NEW_LEVEL_TRESHOLD_TETRIS 600
 #define NEW_LEVEL_TRESHOLD_SNAKE 5

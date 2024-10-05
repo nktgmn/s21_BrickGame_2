@@ -7,12 +7,16 @@ void CLIView::render(GameInfo &game_info) {
     refresh();
     box(game_window, 0, 0);
 
-    for (int i = 0; i < FIELD_H; ++i) {
-        for (int j = 0; j < FIELD_W; ++j) {
-            if (game_info.field[j][i] == 1) {
-                mvwprintw(game_window, (FIELD_H - i - 1) + 1, 3 * j + 1, "[ ]");
-            } else {
-                mvwprintw(game_window, (FIELD_H - i - 1) + 1, 3 * j + 1, "   ");
+    if (game_info.field != nullptr) {
+        for (int i = 0; i < FIELD_H; ++i) {
+            for (int j = 0; j < FIELD_W; ++j) {
+                if (game_info.field[j][i] == 1) {
+                    mvwprintw(game_window, (FIELD_H - i - 1) + 1, 3 * j + 1,
+                              "[ ]");
+                } else {
+                    mvwprintw(game_window, (FIELD_H - i - 1) + 1, 3 * j + 1,
+                              "   ");
+                }
             }
         }
     }
@@ -45,6 +49,19 @@ void CLIView::render(GameInfo &game_info) {
         mvwprintw(params_window, 11, 5, "press P to resume");
     }
 
+    if (game_info.next != nullptr) {
+        mvwprintw(params_window, 14, 5, "NEXT: ");
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                if (game_info.next[i][j] == 1) {
+                    mvwprintw(params_window, 16 + j, 5 + i * 3, "[ ]");
+                } else {
+                    mvwprintw(params_window, 16 + j, 5 + i * 3, "   ");
+                }
+            }
+        }
+    }
+
     wrefresh(params_window);
 
     delwin(game_window);
@@ -54,7 +71,11 @@ void CLIView::render(GameInfo &game_info) {
 Input CLIView::get_input(double time_left) {
     timeout(time_left);
 
+    flushinp();
+
     int c = getch();
+
+    flushinp();
 
     if (c == START_BUTTON) {
         return Input(UserAction_t::Start, check_for_hold(c), true);
@@ -78,12 +99,12 @@ Input CLIView::get_input(double time_left) {
 }
 
 bool CLIView::check_for_hold(int c) {
+    flushinp();
     timeout(HOLD_TIMEOUT);
     int next_ch = getch();
-    timeout(0);
-    while (getch() != ERR)
-        ;
-    return (next_ch == c);
+    bool res = (next_ch == c);
+    flushinp();
+    return res;
 }
 
 }  // namespace s21
