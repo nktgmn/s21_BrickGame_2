@@ -2,7 +2,9 @@
 #define GAME_CONTROLLER_H
 
 #include "brick_game/snake/snake_game.h"
+#include "brick_game/tetris/tetris_game.h"
 #include "gui/cli/cli_view.h"
+#include "gui/desktop/desktop_view.h"
 
 namespace s21 {
 template <typename GameType, typename ViewType>

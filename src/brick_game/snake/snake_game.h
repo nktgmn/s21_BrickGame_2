@@ -1,6 +1,9 @@
 #ifndef SNAKE_GAME_H
 #define SNAKE_GAME_H
 
+// #include <gtest/gtest.h>
+
+#include <chrono>
 #include <fstream>
 #include <list>
 #include <random>
@@ -11,27 +14,17 @@ namespace s21 {
 
 enum class State_snake { Start, Move, Pause, GameLost, GameWon };
 
-enum class Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-};
+enum class Direction { Up, Down, Left, Right };
 
 class SnakeGame {
    public:
     SnakeGame();
 
     GameInfo& updateCurrentState() const;
+    double get_time_left() const;
+
     void userInput(UserAction_t action, bool hold);
     void move();
-    double get_time_left() const;
-    void update_level_and_max_score();
-
-    int get_max_score() const;
-    bool game_won() const;
-    bool game_lost() const;
-    void initialize_game();
 
    private:
     struct Point {
@@ -45,8 +38,21 @@ class SnakeGame {
 
         int x_;
         int y_;
-        friend class SnakeGame;
     };
+
+    // friend class SnakeTest;
+    // FRIEND_TEST(SnakeTest, Tests);
+
+    Point get_new_head(Direction direction) const;
+    Point spawn_apple() const;
+    int get_max_score() const;
+    bool game_won() const;
+    bool game_lost() const;
+
+    void initialize_game();
+    void turn(Direction direction);
+    void update_level_and_max_score();
+    void refresh_timer();
 
     std::list<Point> snake_body;
     Direction snake_direction;
@@ -59,11 +65,6 @@ class SnakeGame {
     int max_score;
     std::chrono::time_point<std::chrono::steady_clock> timestamp;
     double time_left;
-
-    Point get_new_head(Direction direction) const;
-    void turn(Direction direction);
-    Point spawn_apple() const;
-    void refresh_timer();
 };
 
 }  // namespace s21

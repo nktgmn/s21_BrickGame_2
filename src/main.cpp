@@ -1,10 +1,12 @@
 #include <iostream>
 #include <string>
+#include <QApplication>
 
 #include "brick_game/snake/snake_game.h"
 #include "brick_game/tetris/tetris_game.h"
 #include "game_controller.h"
 #include "gui/cli/cli_view.h"
+#include "gui/desktop/desktop_view.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
@@ -23,7 +25,16 @@ int main(int argc, char* argv[]) {
             s21::CLIView view;
             s21::GameController controller(model, view);
             controller.run();
-        } else {
+        } else if (interface == "desktop") {
+            QApplication app(argc, argv);
+            s21::SnakeGame model;
+            s21::DesktopView view;
+            s21::GameController controller(model, view);
+            view.show();
+            controller.run();
+            return app.exec(); 
+        }
+        else {
             std::cerr << "Invalid interface: " << interface << "\n";
             return 1;
         }

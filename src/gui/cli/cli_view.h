@@ -2,8 +2,7 @@
 #define CLI_VIEW_H
 
 #include <ncurses.h>
-
-#include <cstdio>
+#undef scroll 
 #include <string>
 
 #include "../../game_params.h"

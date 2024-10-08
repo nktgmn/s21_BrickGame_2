@@ -30,19 +30,19 @@ void CLIView::render(GameInfo &game_info) {
 
     std::string score = std::to_string(game_info.score);
     mvwprintw(params_window, 2, 5, "SCORE: ");
-    mvwprintw(params_window, 2, 12, score.c_str());
+    mvwprintw(params_window, 2, 12, "%s", score.c_str());
 
     std::string max_score = std::to_string(game_info.max_score);
     mvwprintw(params_window, 4, 5, "MAX SCORE: ");
-    mvwprintw(params_window, 4, 16, max_score.c_str());
+    mvwprintw(params_window, 4, 16, "%s", max_score.c_str());
 
     std::string level = std::to_string(game_info.level);
     mvwprintw(params_window, 6, 5, "LEVEL: ");
-    mvwprintw(params_window, 6, 12, level.c_str());
+    mvwprintw(params_window, 6, 12, "%s", level.c_str());
 
     std::string speed = std::to_string(game_info.speed);
     mvwprintw(params_window, 8, 5, "SPEED: ");
-    mvwprintw(params_window, 8, 12, speed.c_str());
+    mvwprintw(params_window, 8, 12, "%s", speed.c_str());
 
     if (game_info.pause == 1) {
         mvwprintw(params_window, 10, 5, "GAME PAUSED");

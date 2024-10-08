@@ -28,7 +28,7 @@ TetrisGame::Point& TetrisGame::Point::operator=(const Point& other) {
     return *this;
 }
 
-bool TetrisGame::Point::operator==(const Point& other) {
+bool TetrisGame::Point::operator==(const Point& other) const {
     return (x_ == other.x_ && y_ == other.y_);
 }
 
@@ -112,18 +112,6 @@ TetrisGame::Block& TetrisGame::Block::operator=(const Block& other) {
     return *this;
 }
 
-void TetrisGame::initialize_game() {
-    field_points = {};
-    block = Block();
-    next_block = Block();
-    state = State::Start;
-    score = 0;
-    level = 1;
-    speed = SPEED;
-    normal_speed = SPEED;
-    max_score = get_max_score();
-}
-
 bool TetrisGame::valid_coordinate(int x, int y) const {
     if (x < 0 || y < 0 || x >= FIELD_W || y >= FIELD_H) {
         return false;
@@ -193,6 +181,18 @@ int TetrisGame::get_max_score() const {
     }
 
     return max_score;
+}
+
+void TetrisGame::initialize_game() {
+    field_points = {};
+    block = Block();
+    next_block = Block();
+    state = State::Start;
+    score = 0;
+    level = 1;
+    speed = SPEED;
+    normal_speed = SPEED;
+    max_score = get_max_score();
 }
 
 void TetrisGame::update_level_and_max_score() {

@@ -1,8 +1,10 @@
 #ifndef TETRIS_GAME_H
 #define TETRIS_GAME_H
 
+// #include <gtest/gtest.h>
+
+#include <chrono>
 #include <fstream>
-#include <iostream>
 #include <list>
 #include <map>
 #include <random>
@@ -20,8 +22,9 @@ class TetrisGame {
     TetrisGame();
 
     GameInfo& updateCurrentState() const;
-    void userInput(UserAction_t action, bool hold);
     double get_time_left() const;
+
+    void userInput(UserAction_t action, bool hold);
     void move();
 
    private:
@@ -31,7 +34,7 @@ class TetrisGame {
         Point(const Point& other);
 
         Point& operator=(const Point& other);
-        bool operator==(const Point& other);
+        bool operator==(const Point& other) const;
 
         int x_;
         int y_;
@@ -51,13 +54,16 @@ class TetrisGame {
         Point coordinates_;
     };
 
-    void initialize_game();
+    // friend class TetrisTest;
+    // FRIEND_TEST(TetrisTest, Tests);
+
     bool valid_coordinate(int x, int y) const;
     bool block_is_attached() const;
     bool can_move_block() const;
     bool game_lost() const;
     int get_max_score() const;
 
+    void initialize_game();
     void update_level_and_max_score();
     void refresh_timer();
     void reset_timer();
