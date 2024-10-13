@@ -12,7 +12,7 @@ TetrisGame::TetrisGame()
       speed(SPEED),
       normal_speed(SPEED),
       max_score(get_max_score()),
-      time_left(SPEED) {}
+      time_left(-1) {}
 
 TetrisGame::Point::Point() : x_(0), y_(0) {}
 
@@ -193,6 +193,7 @@ void TetrisGame::initialize_game() {
     speed = SPEED;
     normal_speed = SPEED;
     max_score = get_max_score();
+    time_left = -1;
 }
 
 void TetrisGame::update_level_and_max_score() {
@@ -250,6 +251,7 @@ void TetrisGame::attach_block() {
     } else {
         consume_rows();
         state = State::Move;
+        reset_timer();
     }
 }
 
@@ -346,24 +348,17 @@ void TetrisGame::userInput(UserAction_t action, bool hold) {
         if (action == UserAction_t::Pause) {
             state = State::Move;
             reset_timer();
-            return;
         }
-    }
 
-    if (state == State::Start || state == State::GameLost) {
+    } else if (state == State::Start || state == State::GameLost) {
         if (action == UserAction_t::Start) {
             initialize_game();
             state = State::Move;
             reset_timer();
         }
-    }
-
-    if (state == State::Attaching) {
+    } else if (state == State::Attaching) {
         attach_block();
-        reset_timer();
-    }
-
-    if (state == State::Move) {
+    } else if (state == State::Move) {
         if (action == UserAction_t::Pause) {
             state = State::Pause;
             time_left = -1;
@@ -374,40 +369,28 @@ void TetrisGame::userInput(UserAction_t action, bool hold) {
 
         if (action == UserAction_t::Left) {
             block.shift(-1, 0);
+            refresh_timer();
         } else if (action == UserAction_t::Right) {
             block.shift(1, 0);
+            refresh_timer();
         } else if (action == UserAction_t::Action) {
             block.rotate();
+            refresh_timer();
+        } else if (action == UserAction_t::Down) {
+            block.shift(0, -1);
+            speed = (hold == true) ? MIN_SPEED : normal_speed;
+            reset_timer();
         }
 
         if (can_move_block() == false) {
             block = old_block;
-        }
-
-        if (hold == true && action == UserAction_t::Down) {
-            speed = MIN_SPEED;
-            time_left = 0;
-        } else {
-            speed = normal_speed;
-        }
-
-        refresh_timer();
-
-        if (block_is_attached() == true) {
-            state = State::Attaching;
+            if (block_is_attached() == true && action == UserAction_t::Down) {
+                state = State::Attaching;
+            }
         }
     }
 }
 
 double TetrisGame::get_time_left() const { return time_left; }
-
-void TetrisGame::move() {
-    if (block_is_attached() == true) {
-        attach_block();
-    } else {
-        block.shift(0, -1);
-    }
-    reset_timer();
-}
 
 }  // namespace s21

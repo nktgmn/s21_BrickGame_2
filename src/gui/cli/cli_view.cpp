@@ -68,43 +68,70 @@ void CLIView::render(GameInfo &game_info) {
     delwin(params_window);
 }
 
-Input CLIView::get_input(double time_left) {
-    timeout(time_left);
+CLIInput CLIView::get_input(double time_left) {
+    double timer = time_left;
 
-    flushinp();
+    std::chrono::time_point<std::chrono::steady_clock> timestamp =
+        std::chrono::steady_clock::now();
 
-    int c = getch();
+    while (true) {
+        timeout(timer);
 
-    flushinp();
+        flushinp();
 
-    if (c == START_BUTTON) {
-        return Input(UserAction_t::Start, check_for_hold(c), true);
-    } else if (c == KEY_LEFT) {
-        return Input(UserAction_t::Left, check_for_hold(c), true);
-    } else if (c == KEY_RIGHT) {
-        return Input(UserAction_t::Right, check_for_hold(c), true);
-    } else if (c == KEY_UP) {
-        return Input(UserAction_t::Up, check_for_hold(c), true);
-    } else if (c == KEY_DOWN) {
-        return Input(UserAction_t::Down, check_for_hold(c), true);
-    } else if (c == TERMINATE_BUTTON) {
-        return Input(UserAction_t::Terminate, check_for_hold(c), true);
-    } else if (c == PAUSE_BUTTON) {
-        return Input(UserAction_t::Pause, check_for_hold(c), true);
-    } else if (c == ACTION_BUTTON) {
-        return Input(UserAction_t::Action, check_for_hold(c), true);
-    } else {
-        return Input(UserAction_t::Up, false, false);
+        int c = getch();
+
+        flushinp();
+
+        if (c == START_BUTTON) {
+            return CLIInput(UserAction_t::Start, check_for_hold(c), false);
+        } else if (c == KEY_LEFT) {
+            return CLIInput(UserAction_t::Left, check_for_hold(c), false);
+        } else if (c == KEY_RIGHT) {
+            return CLIInput(UserAction_t::Right, check_for_hold(c), false);
+        } else if (c == KEY_UP) {
+            return CLIInput(UserAction_t::Up, check_for_hold(c), false);
+        } else if (c == KEY_DOWN) {
+            return CLIInput(UserAction_t::Down, check_for_hold(c), false);
+        } else if (c == TERMINATE_BUTTON) {
+            return CLIInput(UserAction_t::Terminate, check_for_hold(c), false);
+        } else if (c == PAUSE_BUTTON) {
+            return CLIInput(UserAction_t::Pause, check_for_hold(c), false);
+        } else if (c == ACTION_BUTTON) {
+            return CLIInput(UserAction_t::Action, check_for_hold(c), false);
+        } else if (c == ERR) {
+            return CLIInput(UserAction_t::Action, false, true);
+        } else {
+            std::chrono::time_point<std::chrono::steady_clock> current_time =
+                std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> elapsed =
+                current_time - timestamp;
+            double time_passed = static_cast<double>(elapsed.count());
+            timer = time_passed < time_left ? (time_left - time_passed) : 0;
+        }
     }
 }
 
 bool CLIView::check_for_hold(int c) {
     flushinp();
-    timeout(HOLD_TIMEOUT);
+    timeout(CLI_HOLD_TIMEOUT);
     int next_ch = getch();
     bool res = (next_ch == c);
     flushinp();
     return res;
 }
+
+CLIInput::CLIInput(UserAction_t action, bool hold, bool time_finished)
+    : action_(action), hold_(hold), time_finished_(time_finished) {}
+
+CLIView::CLIView() {
+    initscr();
+    noecho();
+    cbreak();
+    curs_set(false);
+    keypad(stdscr, true);
+}
+
+CLIView::~CLIView() { endwin(); }
 
 }  // namespace s21

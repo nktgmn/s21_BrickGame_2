@@ -7,6 +7,8 @@
 #define SPEED 500
 #define MIN_SPEED 50
 #define SPEED_STEP 30
+#define DESKTOP_HOLD_TIMEOUT 10
+#define CLI_HOLD_TIMEOUT 10
 #define NEW_LEVEL_TRESHOLD_TETRIS 600
 #define NEW_LEVEL_TRESHOLD_SNAKE 5
 
@@ -24,8 +26,30 @@ enum struct UserAction_t {
 };
 
 struct GameInfo {
-    GameInfo();
-    ~GameInfo();
+    GameInfo()
+        : field(nullptr),
+          next(nullptr),
+          score(0),
+          pause(0),
+          level(1),
+          speed(SPEED),
+          max_score(0) {}
+
+    ~GameInfo() {
+        if (field != nullptr) {
+            for (int i = 0; i < FIELD_W; ++i) {
+                delete[] field[i];
+            }
+            delete[] field;
+        }
+
+        if (next != nullptr) {
+            for (int i = 0; i < 4; ++i) {
+                delete[] next[i];
+            }
+            delete[] next;
+        }
+    }
 
     int** field;
     int** next;
@@ -34,15 +58,6 @@ struct GameInfo {
     int level;
     int speed;
     int max_score;
-};
-
-struct Input {
-    UserAction_t action_;
-    bool hold_;
-    bool has_action_;
-
-    Input(UserAction_t action, bool hold, bool has_action)
-        : action_(action), hold_(hold), has_action_(has_action) {}
 };
 
 }  // namespace s21

@@ -26,14 +26,13 @@ SnakeGame::SnakeGame()
     : snake_body({Point(3, 7), Point(3, 6), Point(3, 5), Point(3, 4)}),
       snake_direction(Direction::Up),
       apple(spawn_apple()),
+      state(State_snake::Start),
       score(0),
       level(1),
       speed(SPEED),
       normal_speed(SPEED),
       max_score(get_max_score()),
-      time_left(SPEED) {
-    state = State_snake::Start;
-}
+      time_left(-1) {}
 
 void SnakeGame::initialize_game() {
     snake_body = {Point(3, 7), Point(3, 6), Point(3, 5), Point(3, 4)};
@@ -43,7 +42,7 @@ void SnakeGame::initialize_game() {
     level = 1;
     speed = SPEED;
     normal_speed = SPEED;
-    max_score = get_max_score(), time_left = SPEED;
+    max_score = get_max_score(), time_left = -1;
 }
 
 bool SnakeGame::game_won() const {
@@ -92,18 +91,21 @@ void SnakeGame::move() {
         update_level_and_max_score();
 
         if (game_won() == true) {
+            time_left = -1;
             state = State_snake::GameWon;
+            return;
         } else {
             apple = spawn_apple();
         }
     } else {
         snake_body.pop_back();
         if (game_lost() == true) {
+            time_left = -1;
             state = State_snake::GameLost;
+            return;
         }
     }
-    timestamp = std::chrono::steady_clock::now();
-    time_left = speed;
+    reset_timer();
 }
 
 double SnakeGame::get_time_left() const { return time_left; }
@@ -143,44 +145,76 @@ GameInfo& SnakeGame::updateCurrentState() const {
 }
 
 void SnakeGame::userInput(UserAction_t action, bool hold) {
-    if (action == UserAction_t::Pause) {
-        if (state == State_snake::Move) {
+    if (state == State_snake::Pause) {
+        if (action == UserAction_t::Pause) {
+            state = State_snake::Move;
+            reset_timer();
+        }
+
+    } else if (state == State_snake::Start || state == State_snake::GameLost ||
+               state == State_snake::GameWon) {
+        if (action == UserAction_t::Start) {
+            initialize_game();
+            state = State_snake::Move;
+            reset_timer();
+        }
+
+    } else if (state == State_snake::Move) {
+        if (action == UserAction_t::Pause) {
             state = State_snake::Pause;
             time_left = -1;
-        } else if (state == State_snake::Pause) {
-            state = State_snake::Move;
-            timestamp = std::chrono::steady_clock::now();
-            time_left = speed;
+            return;
+        } else if (action == UserAction_t::Up) {
+            turn(Direction::Up);
+        } else if (action == UserAction_t::Down) {
+            turn(Direction::Down);
+        } else if (action == UserAction_t::Left) {
+            turn(Direction::Left);
+        } else if (action == UserAction_t::Right) {
+            turn(Direction::Right);
+        } else if (action == UserAction_t::Action) {
+            speed = (hold == true) ? MIN_SPEED : normal_speed;
+            move();
+            return;
         }
-    }
 
-    if (action == UserAction_t::Up && state == State_snake::Move) {
-        turn(Direction::Up);
-    } else if (action == UserAction_t::Down && state == State_snake::Move) {
-        turn(Direction::Down);
-    } else if (action == UserAction_t::Left && state == State_snake::Move) {
-        turn(Direction::Left);
-    } else if (action == UserAction_t::Right && state == State_snake::Move) {
-        turn(Direction::Right);
-    } else if ((action == UserAction_t::Start) &&
-               (state == State_snake::Start || state == State_snake::GameWon ||
-                state == State_snake::GameLost)) {
-        initialize_game();
-        state = State_snake::Move;
-        timestamp = std::chrono::steady_clock::now();
-    }
-
-    if (action == UserAction_t::Action && hold == true) {
-        speed = MIN_SPEED;
-        move();
-    } else {
         speed = normal_speed;
-    }
-
-    if (state != State_snake::Pause) {
         refresh_timer();
     }
 }
+
+// SnakeGame::Point SnakeGame::spawn_apple() const {
+//     int free_slots = FIELD_H * FIELD_W - snake_body.size();
+
+//     std::random_device rd;
+//     std::mt19937 gen(rd());
+
+//     std::uniform_int_distribution<> distrib(1, free_slots);
+
+//     int random_number = distrib(gen);
+
+//     int count = 0;
+//     int snake_count = 0;
+//     int row = 0;
+//     int col = 0;
+
+//     while (snake_count != random_number) {
+//         ++count;
+//         ++snake_count;
+
+//         for (auto it = snake_body.begin(); it != snake_body.end(); ++it) {
+//             if (*it == Point(col, row)) {
+//                 --snake_count;
+//                 break;
+//             }
+//         }
+
+//         row = (count - 1) / FIELD_W;
+//         col = (count - 1) % FIELD_W;
+//     }
+
+//     return Point(col, row);
+// }
 
 SnakeGame::Point SnakeGame::spawn_apple() const {
     int free_slots = FIELD_H * FIELD_W - snake_body.size();
@@ -192,25 +226,16 @@ SnakeGame::Point SnakeGame::spawn_apple() const {
 
     int random_number = distrib(gen);
 
-    int count = 0;
-    int snake_count = 0;
-    int row = 0;
-    int col = 0;
+    int shift = 0;
 
-    while (snake_count != random_number) {
-        ++count;
-        ++snake_count;
-
-        for (auto it = snake_body.begin(); it != snake_body.end(); ++it) {
-            if (((*it).x_ == col) && ((*it).y_ == row)) {
-                --snake_count;
-                break;
-            }
+    for (auto it = snake_body.begin(); it != snake_body.end(); ++it) {
+        if ((*it).y_ * FIELD_W + (*it).x_ + 1 <= random_number) {
+            ++shift;
         }
-
-        row = (count - 1) / FIELD_W;
-        col = (count - 1) % FIELD_W;
     }
+
+    int row = (random_number + shift - 1) / FIELD_W;
+    int col = (random_number + shift - 1) % FIELD_W;
 
     return Point(col, row);
 }
@@ -261,6 +286,11 @@ void SnakeGame::refresh_timer() {
     } else {
         time_left = 0;
     }
+}
+
+void SnakeGame::reset_timer() {
+    timestamp = std::chrono::steady_clock::now();
+    time_left = speed;
 }
 
 }  // namespace s21

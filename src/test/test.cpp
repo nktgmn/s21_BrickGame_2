@@ -12,8 +12,10 @@ TEST(SnakeTest, Tests) {
     EXPECT_FALSE(game.game_lost());
     EXPECT_FALSE(game.game_won());
 
+    game.userInput(s21::UserAction_t::Start, false);
+
     for (int i = 0; i < 15; ++i) {
-        game.move();
+       game.userInput(s21::UserAction_t::Action, false);
     }
 
     EXPECT_TRUE(game.game_lost());
@@ -22,15 +24,15 @@ TEST(SnakeTest, Tests) {
     game.initialize_game();
 
     game.userInput(s21::UserAction_t::Start, false);
-    game.move();
+    game.userInput(s21::UserAction_t::Action, false);
     game.userInput(s21::UserAction_t::Right, false);
-    game.move();
+    game.userInput(s21::UserAction_t::Action, false);
     game.userInput(s21::UserAction_t::Down, false);
-    game.move();
+    game.userInput(s21::UserAction_t::Action, false);
     game.userInput(s21::UserAction_t::Left, false);
-    game.move();
+    game.userInput(s21::UserAction_t::Action, false);
     game.userInput(s21::UserAction_t::Up, false);
-    game.move();
+    game.userInput(s21::UserAction_t::Action, false);
 
     game.userInput(s21::UserAction_t::Pause, false);
     EXPECT_TRUE((int)game.get_time_left() == -1);
@@ -94,7 +96,7 @@ TEST(TetrisTest, Tests) {
     game.userInput(s21::UserAction_t::Action, false);
 
     for (int i = 0; i < 80; ++i) {
-        game.move();
+        game.userInput(s21::UserAction_t::Down, false);
     }
 
     game.score = 15000;
@@ -102,6 +104,7 @@ TEST(TetrisTest, Tests) {
     EXPECT_TRUE(game.level == MAX_LEVEL);
     EXPECT_TRUE(game.get_max_score() == 15000);
 
+    game.userInput(s21::UserAction_t::Down, true);
     game.userInput(s21::UserAction_t::Down, true);
     EXPECT_TRUE(game.speed == MIN_SPEED);
 }

@@ -2,7 +2,8 @@
 #define CLI_VIEW_H
 
 #include <ncurses.h>
-#undef scroll 
+#undef scroll
+#undef timeout
 #include <string>
 
 #include "../../game_params.h"
@@ -11,24 +12,24 @@
 #define TERMINATE_BUTTON 27
 #define PAUSE_BUTTON 112
 #define START_BUTTON 115
-#define HOLD_TIMEOUT 100
 
 namespace s21 {
 
+struct CLIInput {
+    CLIInput(UserAction_t action, bool hold, bool time_finished);
+
+    UserAction_t action_;
+    bool hold_;
+    bool time_finished_;
+};
+
 class CLIView {
    public:
-    CLIView() {
-        initscr();
-        noecho();
-        cbreak();
-        curs_set(false);
-        keypad(stdscr, true);
-    }
-
-    ~CLIView() { endwin(); }
+    CLIView();
+    ~CLIView();
 
     void render(GameInfo& game_info);
-    Input get_input(double time_left);
+    CLIInput get_input(double time_left);
 
    private:
     bool check_for_hold(int c);

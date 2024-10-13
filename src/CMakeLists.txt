@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(BrickGame VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_PREFIX_PATH "/Users/nikita/Qt/6.6.2/macos/lib/cmake")
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -18,9 +20,11 @@ find_package(Curses REQUIRED)  # Added this line
 
 set(PROJECT_SOURCES
         main.cpp
-        game_controller.h
-        game_params.cpp
+
         game_params.h
+
+        desktop_controller.h
+        cli_controller.h
 
         brick_game/snake/snake_game.cpp
         brick_game/snake/snake_game.h

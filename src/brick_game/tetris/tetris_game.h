@@ -1,8 +1,7 @@
 #ifndef TETRIS_GAME_H
 #define TETRIS_GAME_H
 
-// #include <gtest/gtest.h>
-
+#include <gtest/gtest.h>
 #include <chrono>
 #include <fstream>
 #include <list>
@@ -25,7 +24,6 @@ class TetrisGame {
     double get_time_left() const;
 
     void userInput(UserAction_t action, bool hold);
-    void move();
 
    private:
     struct Point {
@@ -54,8 +52,8 @@ class TetrisGame {
         Point coordinates_;
     };
 
-    // friend class TetrisTest;
-    // FRIEND_TEST(TetrisTest, Tests);
+    friend class TetrisTest;
+    FRIEND_TEST(TetrisTest, Tests);
 
     bool valid_coordinate(int x, int y) const;
     bool block_is_attached() const;

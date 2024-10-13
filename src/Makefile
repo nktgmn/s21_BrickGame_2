@@ -26,7 +26,7 @@ SOURCES_EXEC = brick_game/snake/snake_game.cpp gui/cli/cli_view.cpp game_params.
 OBJECTS_EXEC = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES_EXEC))
 EXECUTABLE = BrickGame
 
-SOURCES_TEST = brick_game/snake/snake_game.cpp game_params.cpp test/test.cpp
+SOURCES_TEST = brick_game/snake/snake_game.cpp brick_game/tetris/tetris_game.cpp test/test.cpp
 EXECUTABLE_TEST = test/test_bin
 
 install:
@@ -49,20 +49,26 @@ endif
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/coverage.info $(LCOV_FLAG)
 	$(OPEN_CMD) $(GCOV_DIR)/report/index.html
 
-leaks_play_snake: install
-	leaks -atExit -- ./BrickGame snake cli
+leaks_1:
+	leaks -atExit -- ./build/BrickGame.app/Contents/MacOS/BrickGame tetris cli
 
-leaks_play_tetris: install
-	leaks -atExit -- ./BrickGame tetris cli
+leaks_2:
+	leaks -atExit -- ./build/BrickGame.app/Contents/MacOS/BrickGame snake cli
+
+leaks_3:
+	leaks -atExit -- ./build/BrickGame.app/Contents/MacOS/BrickGame tetris desktop
+
+leaks_4:
+	leaks -atExit -- ./build/BrickGame.app/Contents/MacOS/BrickGame snake desktop
 
 leaks_test: test
 	leaks -atExit -- $(EXECUTABLE_TEST)
 
 clang_format:
-	find . -name "*.cpp" -o -name "*.h" | xargs clang-format -i -style="{BasedOnStyle: Google, IndentWidth: 4}"
+	find . -name "*.cpp" -o -name "*.h" -o -name "*.tpp" | xargs clang-format -i -style="{BasedOnStyle: Google, IndentWidth: 4}"
 
 clang_check:
-	find . -name "*.cpp" -o -name "*.h" | xargs clang-format -n -style="{BasedOnStyle: Google, IndentWidth: 4}"
+	find . -name "*.cpp" -o -name "*.h" -o -name "*.tpp" | xargs clang-format -n -style="{BasedOnStyle: Google, IndentWidth: 4}"
 
 clean:
 	rm -rf $(BUILD_DIR) $(EXECUTABLE) max_score.txt $(EXECUTABLE_TEST) $(GCOV_DIR)

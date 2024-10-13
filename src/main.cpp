@@ -1,10 +1,11 @@
+#include <QApplication>
 #include <iostream>
 #include <string>
-#include <QApplication>
 
 #include "brick_game/snake/snake_game.h"
 #include "brick_game/tetris/tetris_game.h"
-#include "game_controller.h"
+#include "cli_controller.h"
+#include "desktop_controller.h"
 #include "gui/cli/cli_view.h"
 #include "gui/desktop/desktop_view.h"
 
@@ -23,18 +24,15 @@ int main(int argc, char* argv[]) {
         if (interface == "cli") {
             s21::SnakeGame model;
             s21::CLIView view;
-            s21::GameController controller(model, view);
+            s21::CLIController controller(model, view);
             controller.run();
         } else if (interface == "desktop") {
             QApplication app(argc, argv);
             s21::SnakeGame model;
             s21::DesktopView view;
-            s21::GameController controller(model, view);
-            view.show();
-            controller.run();
-            return app.exec(); 
-        }
-        else {
+            s21::DesktopControllerSnake controller(model, view);
+            app.exec();
+        } else {
             std::cerr << "Invalid interface: " << interface << "\n";
             return 1;
         }
@@ -42,8 +40,14 @@ int main(int argc, char* argv[]) {
         if (interface == "cli") {
             s21::TetrisGame model;
             s21::CLIView view;
-            s21::GameController controller(model, view);
+            s21::CLIController controller(model, view);
             controller.run();
+        } else if (interface == "desktop") {
+            QApplication app(argc, argv);
+            s21::TetrisGame model;
+            s21::DesktopView view;
+            s21::DesktopControllerTetris controller(model, view);
+            app.exec();
         } else {
             std::cerr << "Invalid interface: " << interface << "\n";
             return 1;

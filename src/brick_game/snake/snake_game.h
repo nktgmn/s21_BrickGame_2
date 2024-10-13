@@ -1,72 +1,72 @@
-#ifndef SNAKE_GAME_H
-#define SNAKE_GAME_H
+    #ifndef SNAKE_GAME_H
+    #define SNAKE_GAME_H
 
-// #include <gtest/gtest.h>
+    #include <gtest/gtest.h>
+    #include <chrono>
+    #include <fstream>
+    #include <list>
+    #include <random>
 
-#include <chrono>
-#include <fstream>
-#include <list>
-#include <random>
+    #include "../../game_params.h"
 
-#include "../../game_params.h"
+    namespace s21 {
 
-namespace s21 {
+    enum class State_snake { Start, Move, Pause, GameLost, GameWon };
 
-enum class State_snake { Start, Move, Pause, GameLost, GameWon };
+    enum class Direction { Up, Down, Left, Right };
 
-enum class Direction { Up, Down, Left, Right };
+    class SnakeGame {
+    public:
+        SnakeGame();
 
-class SnakeGame {
-   public:
-    SnakeGame();
+        GameInfo& updateCurrentState() const;
+        double get_time_left() const;
 
-    GameInfo& updateCurrentState() const;
-    double get_time_left() const;
+        void userInput(UserAction_t action, bool hold);
 
-    void userInput(UserAction_t action, bool hold);
-    void move();
+    private:
+        struct Point {
+            Point(int x, int y);
+            Point(const Point& other);
 
-   private:
-    struct Point {
-        Point(int x, int y);
-        Point(const Point& other);
+            Point& operator=(const Point& other);
 
-        Point& operator=(const Point& other);
+            bool operator==(const Point& other) const;
+            bool operator!=(const Point& other) const;
 
-        bool operator==(const Point& other) const;
-        bool operator!=(const Point& other) const;
+            int x_;
+            int y_;
+        };
 
-        int x_;
-        int y_;
+        friend class SnakeTest;
+        FRIEND_TEST(SnakeTest, Tests);
+
+        Point get_new_head(Direction direction) const;
+        Point spawn_apple() const;
+        int get_max_score() const;
+        bool game_won() const;
+        bool game_lost() const;
+
+        void initialize_game();
+        void turn(Direction direction);
+        void update_level_and_max_score();
+        void refresh_timer();
+        void reset_timer();
+        void move();
+
+        std::list<Point> snake_body;
+        Direction snake_direction;
+        Point apple;
+        State_snake state;
+        int score;
+        int level;
+        int speed;
+        int normal_speed;
+        int max_score;
+        std::chrono::time_point<std::chrono::steady_clock> timestamp;
+        double time_left;
     };
 
-    // friend class SnakeTest;
-    // FRIEND_TEST(SnakeTest, Tests);
+    }  // namespace s21
 
-    Point get_new_head(Direction direction) const;
-    Point spawn_apple() const;
-    int get_max_score() const;
-    bool game_won() const;
-    bool game_lost() const;
-
-    void initialize_game();
-    void turn(Direction direction);
-    void update_level_and_max_score();
-    void refresh_timer();
-
-    std::list<Point> snake_body;
-    Direction snake_direction;
-    Point apple;
-    State_snake state;
-    int score;
-    int level;
-    int speed;
-    int normal_speed;
-    int max_score;
-    std::chrono::time_point<std::chrono::steady_clock> timestamp;
-    double time_left;
-};
-
-}  // namespace s21
-
-#endif
+    #endif
