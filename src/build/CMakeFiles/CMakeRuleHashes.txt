@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-104afc1ba4fa4b0436a12922e3a638d8 CMakeFiles/BrickGame_autogen
