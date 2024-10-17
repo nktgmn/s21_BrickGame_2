@@ -11,12 +11,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find Qt Widgets package
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-
-# Find ncurses library
-find_package(Curses REQUIRED)  # Added this line
+find_package(Curses REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -40,32 +37,25 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(BrickGame  # Change desktop_gui to BrickGame
+    qt_add_executable(BrickGame
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 else()
-    if(ANDROID)
-        add_library(BrickGame SHARED  # Change desktop_gui to BrickGame
-            ${PROJECT_SOURCES}
-        )
-    else()
-        add_executable(BrickGame  # Change desktop_gui to BrickGame
-            ${PROJECT_SOURCES}
-        )
-    endif()
+    add_executable(BrickGame
+        ${PROJECT_SOURCES}
+    )
 endif()
 
-# Link libraries for the project
 target_link_libraries(BrickGame PRIVATE 
     Qt${QT_VERSION_MAJOR}::Widgets 
-    ${CURSES_LIBRARIES}  # Link ncurses
+    ${CURSES_LIBRARIES}
 )
 
-# Bundle properties for macOS
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.BrickGame)  # Update if necessary
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.BrickGame)
 endif()
+
 set_target_properties(BrickGame PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -75,12 +65,13 @@ set_target_properties(BrickGame PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS BrickGame  # Change desktop_gui to BrickGame
+
+install(TARGETS BrickGame  
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(BrickGame)  # Change desktop_gui to BrickGame
+    qt_finalize_executable(BrickGame)
 endif()

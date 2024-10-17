@@ -6,7 +6,7 @@ LDFLAGS = -lncurses
 GCOV_FLAGS = -fprofile-arcs -ftest-coverage --coverage
 LINKFLAGS = -lstdc++ -lm
 
-BUILD_DIR = ../build
+BUILD_DIR = build
 SRC_DIR = .
 TEST_DIR = ./test
 GCOV_DIR = test/gcov
@@ -65,13 +65,13 @@ leaks_test: test
 	leaks -atExit -- $(EXECUTABLE_TEST)
 
 clang_format:
-	find . -name "*.cpp" -o -name "*.h" -o -name "*.tpp" | xargs clang-format -i -style="{BasedOnStyle: Google, IndentWidth: 4}"
+	find . -path ./build -prune -o \( -name "*.cpp" -o -name "*.h" \) -print | xargs clang-format -i -style="{BasedOnStyle: Google, IndentWidth: 4}"
 
 clang_check:
-	find . -name "*.cpp" -o -name "*.h" -o -name "*.tpp" | xargs clang-format -n -style="{BasedOnStyle: Google, IndentWidth: 4}"
+	find . -path ./build -prune -o \( -name "*.cpp" -o -name "*.h" \) -print | xargs clang-format -n -style="{BasedOnStyle: Google, IndentWidth: 4}"
 
 clean:
-	rm -rf $(BUILD_DIR) $(EXECUTABLE) max_score.txt $(EXECUTABLE_TEST) $(GCOV_DIR)
+	rm -rf $(BUILD_DIR) $(EXECUTABLE) max_score_tetris.txt max_score_snake.txt $(EXECUTABLE_TEST) $(GCOV_DIR)
 
 tetris: clean install
 	./BrickGame tetris cli

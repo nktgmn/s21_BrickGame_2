@@ -183,39 +183,6 @@ void SnakeGame::userInput(UserAction_t action, bool hold) {
     }
 }
 
-// SnakeGame::Point SnakeGame::spawn_apple() const {
-//     int free_slots = FIELD_H * FIELD_W - snake_body.size();
-
-//     std::random_device rd;
-//     std::mt19937 gen(rd());
-
-//     std::uniform_int_distribution<> distrib(1, free_slots);
-
-//     int random_number = distrib(gen);
-
-//     int count = 0;
-//     int snake_count = 0;
-//     int row = 0;
-//     int col = 0;
-
-//     while (snake_count != random_number) {
-//         ++count;
-//         ++snake_count;
-
-//         for (auto it = snake_body.begin(); it != snake_body.end(); ++it) {
-//             if (*it == Point(col, row)) {
-//                 --snake_count;
-//                 break;
-//             }
-//         }
-
-//         row = (count - 1) / FIELD_W;
-//         col = (count - 1) % FIELD_W;
-//     }
-
-//     return Point(col, row);
-// }
-
 SnakeGame::Point SnakeGame::spawn_apple() const {
     int free_slots = FIELD_H * FIELD_W - snake_body.size();
 

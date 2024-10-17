@@ -15,7 +15,7 @@ TEST(SnakeTest, Tests) {
     game.userInput(s21::UserAction_t::Start, false);
 
     for (int i = 0; i < 15; ++i) {
-       game.userInput(s21::UserAction_t::Action, false);
+        game.userInput(s21::UserAction_t::Action, false);
     }
 
     EXPECT_TRUE(game.game_lost());

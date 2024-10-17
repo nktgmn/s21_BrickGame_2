@@ -1,7 +1,6 @@
 #ifndef TETRIS_GAME_H
 #define TETRIS_GAME_H
 
-#include <gtest/gtest.h>
 #include <chrono>
 #include <fstream>
 #include <list>
@@ -52,8 +51,10 @@ class TetrisGame {
         Point coordinates_;
     };
 
+    #ifdef TESTING
     friend class TetrisTest;
     FRIEND_TEST(TetrisTest, Tests);
+    #endif
 
     bool valid_coordinate(int x, int y) const;
     bool block_is_attached() const;
