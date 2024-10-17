@@ -39,3 +39,41 @@ This program is BrickGame, where you can play Tetris and Snake.
 - **ESC**: Terminate game
 - **SPACE**: Rotate tetromino / Increase snake speed (if held)
 - **Down arrow**: Increase speed of tetromino (if held)
+
+## Finite State Machine (FSM) Description
+
+### Snake Game States
+- **Start** 
+  - Transition to **Move**
+
+- **Move**
+  - Transition to **Pause**
+  - Transition to **GameWon**
+  - Transition to **GameLost**
+
+- **Pause**
+  - Transition to **Move**
+
+- **GameLost**
+  - Transition to **Start**
+
+- **GameWon**
+  - Transition to **Start**
+
+### Tetris Game States
+- **Start**
+  - Transition to **Move**
+
+- **Move**
+  - Transition to **Pause**
+  - Transition to **Attaching**
+  - Transition to **GameLost**
+
+- **Attaching**
+  - Transition to **Move**
+
+- **Pause**
+  - Transition to **Move**
+
+- **GameLost**
+  - Transition to **Start**
