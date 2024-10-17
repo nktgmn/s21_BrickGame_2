@@ -37,10 +37,10 @@ class SnakeGame {
         int y_;
     };
 
-    #ifdef TESTING
+#ifdef TESTING
     friend class SnakeTest;
     FRIEND_TEST(SnakeTest, Tests);
-    #endif
+#endif
 
     Point get_new_head(Direction direction) const;
     Point spawn_apple() const;

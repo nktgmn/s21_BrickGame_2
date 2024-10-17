@@ -51,10 +51,10 @@ class TetrisGame {
         Point coordinates_;
     };
 
-    #ifdef TESTING
+#ifdef TESTING
     friend class TetrisTest;
     FRIEND_TEST(TetrisTest, Tests);
-    #endif
+#endif
 
     bool valid_coordinate(int x, int y) const;
     bool block_is_attached() const;
